@@ -1,0 +1,263 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Product {
+private:
+    string name;
+    double price;
+    int quantity;
+public:
+    Product(string name, double price, int quantity) : name(name), price(price), quantity(quantity) {}
+
+    string getName() const {
+        return name;
+    }
+double getPrice() const {
+        return price;
+    }
+
+    int getQuantity() const {
+        return quantity;
+    }
+
+void setQuantity(int newQuantity) {
+        quantity = newQuantity;
+    }
+};
+
+class Customer {
+private:
+    string name;
+    string address;
+    string mobileNumber;
+public:
+  Customer(string name, string address, string            mobileNumber) : name(name), address(address), mobileNumber(mobileNumber) {}
+
+    string getName() const {
+        return name;
+    }
+string getAddress() const {
+        return address;
+    }
+
+    string getMobileNumber() const {
+        return mobileNumber;
+    }
+};
+
+class TransactionProduct {
+private:
+string name;
+    double price;
+    int quantity;
+
+public:
+    TransactionProduct(string name, double price, int quantity) : name(name), price(price), quantity(quantity) {}
+string getName() const {
+        return name;
+    }
+
+    double getPrice() const {
+        return price;
+    }
+
+    int getQuantity() const {
+        return quantity;
+    }
+
+
+double getTotalPrice() const {
+        return price * quantity;
+    }
+};
+
+class Transaction {
+private:
+    Customer customer;
+    vector<TransactionProduct> products;
+public:
+    Transaction(Customer customer, vector<TransactionProduct> products) : customer(customer), products(products) {}
+
+    Customer getCustomer() const {
+        return customer;
+    }
+ vector<TransactionProduct> getProducts() const {
+        return products;
+    }
+
+
+
+double getTotalPrice() const {
+        double totalPrice = 0.0;
+        for (auto product : products) {
+            totalPrice += product.getTotalPrice();
+        }
+        return totalPrice;
+    }
+};
+
+class POS {
+private:
+    vector<Product> products;
+    vector<Transaction> transactions;
+
+public:
+    void addProduct() {
+cout << "Enter product name: ";
+        string name;
+        cin >> name;
+
+cout << "Enter product price: ";
+        double price;
+        cin >> price;
+
+        cout << "Enter product quantity: ";
+        int quantity;
+        cin >> quantity;
+ Product product(name, price, quantity);
+        products.push_back(product);
+
+        cout << "Product added.\n";
+    }
+
+    void displayProducts() const {
+        if (products.empty()) {
+            cout << "No products available.\n";
+            return;
+        }
+
+
+
+cout << "Product list:\n";
+        for (auto product : products) {
+            cout << "- Name: " << product.getName()
+                 << ", Price: " << product.getPrice()
+                 << ", Quantity: " << product.getQuantity() << "\n";
+        }
+    }
+
+    void addTransaction() {
+        cout << "Enter customer name: ";
+        string name;
+        cin >> name;
+
+        cout << "Enter customer address: ";
+        string address;
+        cin >> address;
+        
+        cout << "Enter customer mobile number: ";
+        string mobileNumber;
+        cin >> mobileNumber;Customer customer(name, address, mobileNumber);
+
+        vector<TransactionProduct> transactionProducts;
+        while (true) {
+            cout << "Enter product name (or 'done' to finish adding products): ";
+            string productName;
+            cin >> productName;
+
+            if (productName == "done") {
+                break;
+            }
+ int productIndex = -1;
+      
+          bool productFound = false;
+          for (int i = 0; i < products.size(); i++) {
+          if (products[i].getName() == productName) {
+
+productFound = true;
+                    productIndex = i;
+                    break;
+                }
+            }
+
+            if (!productFound) {
+                cout << "Product not found.\n";
+                continue;
+            }
+ cout << "Enter product quantity: ";
+            int productQuantity;
+            cin >> productQuantity;
+
+            if (productQuantity > products[productIndex].getQuantity()) {
+                cout << "Not enough stock available.\n";
+                continue;
+            }
+          }
+
+        if (transactionProducts.empty()) {
+            cout << "No products added to transaction.\n";
+            return;
+        }
+
+         Transaction transaction(customer,    transactionProducts);
+        transactions.push_back(transaction);
+cout << "Transaction added.\n";
+    }
+
+    void displayTransactions() const {
+        if (transactions.empty()) {
+            cout << "No transactions available.\n";
+            return;
+        }
+ cout << "Transaction list:\n";
+        for (auto transaction : transactions) {
+            Customer customer = transaction.getCustomer();
+           cout << "- Customer name: " <<           customer.getName()
+              << ", Address: " << customer.getAddress()
+<< ", Mobile Number: " << customer.getMobileNumber() << "\n";
+
+            vector<TransactionProduct> transactionProducts = transaction.getProducts();
+            for (auto transactionProduct : transactionProducts) {
+                cout << "  - Product name: " << 
+transactionProduct.getName()
+                     << ", Price: " << transactionProduct.getPrice()
+                     << ", Quantity: " << transactionProduct.getQuantity()
+                     << ", Total Price: " << transactionProduct.getTotalPrice() << "\n";
+            }
+cout << "  Total Price: " << transaction.getTotalPrice() << "\n";
+        }
+    }
+};
+
+int main() {
+    POS pos;
+    int option;
+
+
+do {
+        cout << "\nSelect an option:\n";
+        cout << "1. Add product\n";
+        cout << "2. Display products\n";
+        cout << "3. Add transaction\n";
+        cout << "4. Display transactions\n";
+        cout << "5. Exit\n";
+        cout << "> ";
+        cin >> option;
+ switch (option) {
+            case 1:
+                pos.addProduct();
+                break;
+            case 2:
+                pos.displayProducts();
+                break;
+            case 3:
+                pos.addTransaction();
+                break;
+            case 4:
+                pos.displayTransactions();
+                break;
+
+case 5:
+                cout << "Exiting program...\n";
+                break;
+            default:
+                cout << "Invalid option.\n";
+                break;
+        }
+    } while (option != 5);
+
+    return 0;
+   }
